@@ -13,4 +13,7 @@ COPY . .
 
 EXPOSE 8000
 
-CMD alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# If DATABASE_URL is provided → PostgreSQL + alembic
+# Otherwise → SQLite (DEV_SQLITE=true, app bootstraps itself)
+ENV DEV_SQLITE=true
+CMD if [ -n "$DATABASE_URL" ]; then alembic upgrade head; fi && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
