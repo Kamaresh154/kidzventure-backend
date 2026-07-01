@@ -13,6 +13,8 @@ class ProductCreate(BaseModel):
     category: str | None = None
     unit: str = "pcs"
     unit_cost: Decimal = Field(default=Decimal("0"), ge=0)
+    selling_price: Decimal = Field(default=Decimal("0"), ge=0)
+    mrp: Decimal = Field(default=Decimal("0"), ge=0)
     reorder_level: int = Field(default=0, ge=0)
     description: str | None = None
 
@@ -23,6 +25,8 @@ class ProductUpdate(BaseModel):
     category: str | None = None
     unit: str | None = None
     unit_cost: Decimal | None = None
+    selling_price: Decimal | None = None
+    mrp: Decimal | None = None
     reorder_level: int | None = None
     description: str | None = None
 
@@ -35,6 +39,8 @@ class ProductResponse(ORMModel):
     category: str | None
     unit: str
     unit_cost: Decimal
+    selling_price: Decimal
+    mrp: Decimal
     reorder_level: int
     description: str | None
     current_stock: int = 0
