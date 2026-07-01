@@ -44,6 +44,12 @@ class Settings(BaseSettings):
             return f"sqlite+aiosqlite:///{self.sqlite_path}"
         return self.database_url
 
+    @property
+    def effective_database_url_sync(self) -> str:
+        if self.dev_sqlite:
+            return f"sqlite:///{self.sqlite_path}"
+        return self.database_url_sync
+
     # JWT — MUST be overridden via JWT_SECRET env var in production
     jwt_secret: str = ""
     jwt_algorithm: str = "HS256"
