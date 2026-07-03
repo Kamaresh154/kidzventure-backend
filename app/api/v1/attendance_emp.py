@@ -32,7 +32,7 @@ async def list_emp_attendance(
 
 @router.post("/check-in", response_model=EmpAttendanceResponse, status_code=201)
 async def emp_check_in(data: EmpAttendanceCreate, db: DbSession, current: CurrentUserDep) -> EmpAttendanceResponse:
-    current.require_permission("payroll.write")
+    current.require_permission("attendance.write")
     if current.org_id is None:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="No organization context")
@@ -48,7 +48,7 @@ async def emp_check_out(
     db: DbSession,
     current: CurrentUserDep,
 ) -> EmpAttendanceResponse:
-    current.require_permission("payroll.write")
+    current.require_permission("attendance.write")
     if current.org_id is None:
         from fastapi import HTTPException
         raise HTTPException(status_code=400, detail="No organization context")
