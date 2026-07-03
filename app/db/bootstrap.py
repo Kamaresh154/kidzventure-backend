@@ -119,7 +119,8 @@ async def seed_rbac(db: AsyncSession) -> None:
         "organizations.read", "centers.read",
         "attendance.read", "attendance.write",
         "payroll.read", "crm.read", "crm.write",
-        "invoices.read", "inventory.read", "inventory.write", "reports.read",
+        "invoices.read", "invoices.write",
+        "inventory.read", "inventory.write", "reports.read",
     }
     if "employee" in roles:
         for code in EMPLOYEE_PERMS:
