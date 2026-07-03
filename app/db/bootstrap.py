@@ -134,6 +134,36 @@ async def seed_rbac(db: AsyncSession) -> None:
                 db.add(RolePermission(role_id=roles["franchise_manager"].id, permission_id=perms[code].id))
 
 
+async def ensure_employee_permissions(db: AsyncSession) -> None:
+    """Run every startup — grants employee role any newly-added permissions
+    that an existing database would miss because seed_rbac() skips seeding
+    when rows already exist."""
+    EMPLOYEE_PERMS = {
+        "organizations.read", "centers.read",
+        "attendance.read", "attendance.write",
+        "payroll.read", "crm.read", "crm.write",
+        "invoices.read", "invoices.write",
+        "inventory.read", "inventory.write", "reports.read",
+    }
+    role = (await db.execute(select(Role).where(Role.code == "employee"))).scalar_one_or_none()
+    if not role:
+        return
+    for code in EMPLOYEE_PERMS:
+        perm = (await db.execute(select(Permission).where(Permission.code == code))).scalar_one_or_none()
+        if not perm:
+            continue
+        existing = (
+            await db.execute(
+                select(RolePermission).where(
+                    RolePermission.role_id == role.id,
+                    RolePermission.permission_id == perm.id,
+                )
+            )
+        ).scalar_one_or_none()
+        if not existing:
+            db.add(RolePermission(role_id=role.id, permission_id=perm.id))
+
+
 async def seed_demo_org(db: AsyncSession) -> None:
     existing = await db.execute(select(Organization).where(Organization.slug == "demo"))
     if existing.scalar_one_or_none():
@@ -180,5 +210,6 @@ async def bootstrap_sqlite() -> None:
 
     async with AsyncSessionLocal() as db:
         await seed_rbac(db)
+        await ensure_employee_permissions(db)
         await seed_demo_org(db)
         await db.commit()
