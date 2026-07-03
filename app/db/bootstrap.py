@@ -210,6 +210,7 @@ async def bootstrap_sqlite() -> None:
 
     async with AsyncSessionLocal() as db:
         await seed_rbac(db)
+        await db.flush()
         await ensure_employee_permissions(db)
         await seed_demo_org(db)
         await db.commit()
