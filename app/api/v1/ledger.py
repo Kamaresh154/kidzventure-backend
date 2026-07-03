@@ -66,7 +66,7 @@ async def list_entries(
     from_date: datetime | None = None,
     to_date: datetime | None = None,
     page: int = Query(1, ge=1),
-    page_size: int = Query(20, ge=1, le=100),
+    page_size: int = Query(20, ge=1, le=200),
 ) -> LedgerEntryListResponse:
     current.require_permission("ledger.read")
     items, total = await ledger_service.list_entries(
